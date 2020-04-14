@@ -1,0 +1,25 @@
+{
+    "name": "matthieu/doctrine-iptools",
+    "description": "Lib",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Matthieu Racine",
+            "email": "matthieu.racine@gmail.com"
+        }
+    ],
+    "require": {
+        "doctrine/orm": "^2.7",
+        "matracine/ip-tools": "^1.0",
+        "php": "^7.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~6.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "mracine\\IPTools\\Doctrine\\": "lib/"
+        }
+    }    
+}
