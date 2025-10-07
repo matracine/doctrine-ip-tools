@@ -36,8 +36,15 @@ class SubnetTest extends TestCase
         $IPv4Subnet = IPv4\Subnet::fromCidr(IPv4\Address::fromString("10.0.0.0"), 24);
 
         $subnet = Subnet::set($IPv4Subnet);
-        $this->assertAttributeEquals(0x0a000000, 'address', $subnet);
-        $this->assertAttributeEquals(24, 'netmask', $subnet);
+
+        $reflexionClass = new \ReflectionClass(Subnet::class);
+        $reflexionPropertyAddress = $reflexionClass->getProperty('address');
+        $reflexionPropertyNetmask = $reflexionClass->getProperty('netmask');
+        $reflexionPropertyAddress->setAccessible(true);
+        $reflexionPropertyNetmask->setAccessible(true);
+
+        $this->assertEquals(0x0a000000, $reflexionPropertyAddress->getValue($subnet));
+        $this->assertEquals(24, $reflexionPropertyNetmask->getValue($subnet));
     }
     
     /**
@@ -58,15 +65,15 @@ class SubnetTest extends TestCase
         $reflexionClass = new \ReflectionClass(Subnet::class);
         $reflexionPropertyAddress = $reflexionClass->getProperty('address');
         $reflexionPropertyNetmask = $reflexionClass->getProperty('netmask');
-        $reflexionPropertyAddress->setAccessible('true');
-        $reflexionPropertyNetmask->setAccessible('true');
+        $reflexionPropertyAddress->setAccessible(true);
+        $reflexionPropertyNetmask->setAccessible(true);
         $reflexionPropertyAddress->setValue($subnet, 0x0a000000);
         $reflexionPropertyNetmask->setValue($subnet, 24);
 
         // Retreive it via getter an ensure the final object has been correctly constructed
         $IPv4Subnet = Subnet::get($subnet);
         $this->assertNotNull($IPv4Subnet);
-        $this->assertEquals(0x0a000000, $IPv4Subnet->getNetworkAddress()->int());
+        $this->assertEquals(0x0a000000, $IPv4Subnet->getNetworkAddress()->asInteger());
         $this->assertEquals(24, $IPv4Subnet->getNetmaskAddress()->asCidr());
     }
     // Tester avec des valeurs > 32bits => Exception

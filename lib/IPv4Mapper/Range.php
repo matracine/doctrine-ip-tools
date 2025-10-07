@@ -5,19 +5,13 @@ use Doctrine\ORM\Mapping as ORM;
 
 use mracine\IPTools\IPv4;
 
-/**
- * @ORM\Embeddable
- */
-class Range
+ #[ORM\Embeddable]
+ class Range
 {
-    /**
-     * @ORM\Column(type="integer", nullable=true, options={"unsigned"=true})
-     */
+    #[ORM\Column(type: "integer", nullable: true, options: [ "unsigned" => true ] )]
     private $address;
 
-    /**
-     * @ORM\Column(type="integer", nullable=true, options={"unsigned"=true})
-     */
+    #[ORM\Column(type: "integer", nullable: true, options: [ "unsigned" => true ] )]
     private $count;
 
     private $proxied = null;

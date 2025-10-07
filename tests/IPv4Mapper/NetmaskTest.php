@@ -34,7 +34,13 @@ class NetmaskTest extends TestCase
     public function testInternals()
     {
         $netmask = Netmask::set(IPv4\Netmask::fromString("255.255.0.0"));
-        $this->assertAttributeEquals(16, 'netmask', $netmask);
+
+        $reflexionClass = new \ReflectionClass(Netmask::class);
+        $reflexionProperty = $reflexionClass->getProperty('netmask');
+        $reflexionProperty->setAccessible(true);
+        $actualValue = $reflexionProperty->getValue($netmask);
+
+        $this->assertEquals(16, $actualValue);
     }
     
     /**
@@ -54,12 +60,12 @@ class NetmaskTest extends TestCase
         // Hydrate the object has Doctrine will
         $reflexionClass = new \ReflectionClass(Netmask::class);
         $reflexionProperty = $reflexionClass->getProperty('netmask');
-        $reflexionProperty->setAccessible('true');
+        $reflexionProperty->setAccessible(true);
         $reflexionProperty->setValue($netmask, 0);
 
         $IPv4Netmask = Netmask::get($netmask);
         $this->assertNotNull($IPv4Netmask);
-        $this->assertEquals(0, $IPv4Netmask->int());
+        $this->assertEquals(0, $IPv4Netmask->asCidr());
     }
     // Tester avec des valeurs > 32bits => Exception
     // Tester avec différents adresses borders : 0-255.255.255.255

@@ -36,8 +36,15 @@ class RangeTest extends TestCase
         $IPv4Range = new IPv4\Range(IPv4\Address::fromString("10.0.0.2"), IPv4\Address::fromString("10.0.0.3"));
 
         $range = Range::set($IPv4Range);
-        $this->assertAttributeEquals(0x0a000002, 'address', $range);
-        $this->assertAttributeEquals(2, 'count', $range);
+
+        $reflexionClass = new \ReflectionClass(Range::class);
+        $reflexionPropertyAddress = $reflexionClass->getProperty('address');
+        $reflexionPropertyCount = $reflexionClass->getProperty('count');
+        $reflexionPropertyAddress->setAccessible(true);
+        $reflexionPropertyCount->setAccessible(true);
+
+        $this->assertEquals(0x0a000002, $reflexionPropertyAddress->getValue($range));
+        $this->assertEquals(2, $reflexionPropertyCount->getValue($range));
     }
     
     /**
@@ -58,15 +65,15 @@ class RangeTest extends TestCase
         $reflexionClass = new \ReflectionClass(Range::class);
         $reflexionPropertyAddress = $reflexionClass->getProperty('address');
         $reflexionPropertyCount = $reflexionClass->getProperty('count');
-        $reflexionPropertyAddress->setAccessible('true');
-        $reflexionPropertyCount->setAccessible('true');
+        $reflexionPropertyAddress->setAccessible(true);
+        $reflexionPropertyCount->setAccessible(true);
         $reflexionPropertyAddress->setValue($range, 0x0a000002);
         $reflexionPropertyCount->setValue($range, 2);
 
         // Retreive it via getter an ensure the final object has been correctly constructed
         $IPv4Range = Range::get($range);
         $this->assertNotNull($IPv4Range);
-        $this->assertEquals(0x0a000002, $IPv4Range->getLowerBound()->int());
+        $this->assertEquals(0x0a000002, $IPv4Range->getLowerBound()->asInteger());
         $this->assertEquals(2, count($IPv4Range));
     }
     // Tester avec des valeurs > 32bits => Exception

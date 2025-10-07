@@ -9,7 +9,7 @@ use mracine\IPTools\IPv4;
 /**
  * @coversDefaultClass mracine\IPTools\Doctrine\IPv4Mapper\Address
  */
-class AdressTest extends TestCase
+class AddressTest extends TestCase
 {
     /**
      * @covers ::set
@@ -34,7 +34,13 @@ class AdressTest extends TestCase
     public function testInternals()
     {
         $address = Address::set(IPv4\Address::fromString("10.0.0.2"));
-        $this->assertAttributeEquals(0x0a000002, 'address', $address);
+
+        $reflexionClass = new \ReflectionClass(Address::class);
+        $reflexionProperty = $reflexionClass->getProperty('address');
+        $reflexionProperty->setAccessible(true);
+        $actualValue = $reflexionProperty->getValue($address);
+
+        $this->assertEquals(0x0a000002, $actualValue);
     }
     
     /**
@@ -54,12 +60,12 @@ class AdressTest extends TestCase
         // Hydrate the object has Doctrine will
         $reflexionClass = new \ReflectionClass(Address::class);
         $reflexionProperty = $reflexionClass->getProperty('address');
-        $reflexionProperty->setAccessible('true');
+        $reflexionProperty->setAccessible(true);
         $reflexionProperty->setValue($address, 0);
 
         $IPv4Address = Address::get($address);
         $this->assertNotNull($IPv4Address);
-        $this->assertEquals(0, $IPv4Address->int());
+        $this->assertEquals(0, $IPv4Address->asInteger());
     }
     // Tester avec des valeurs > 32bits => Exception
     // Tester avec différents adresses borders : 0-255.255.255.255
